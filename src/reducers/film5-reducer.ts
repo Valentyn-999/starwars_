@@ -3,18 +3,28 @@ import {setAppErrorAC, SetAppErrorActionType} from "./app-reducer";
 import {film5API, starShipsAPI} from "../api/api";
 import {StarshipType} from "./Types";
 
+//  initState better be =>  starships: null,
+//     starshipsInfo: null,
+//     starshipsChecked: null
 
+// initialState:  !!!  InitStateType  !!! = { ... } - need to check result
 const initialState = {
     // status: '',
     starships: [],
     starshipsInfo: [],
     starshipsChecked: []
 }
-
+// typeof? why you deligated work on TS? its not good idea and as i look at you thunk you write data:any. As you use good model for dev, better use
+//just for example: 
+// starships: null as array<starships> | null
+// end etc ... 
+// or created some types and and added to single positions and then use typeof 
 type InitStateType = typeof initialState
 
+// any is InitStateType... use TS for initState and you will see more errors with y state. 
 export const film5Reducer = (state: InitStateType = initialState, action: ActionsType): any => {
     switch (action.type) {
+            //get its method API, where you get a DATA. may be SET? API = GET, Actions = SET, think it looks better
         case 'GET_FILM5': {
             return {
                 ...state,
@@ -50,6 +60,10 @@ export const film5Reducer = (state: InitStateType = initialState, action: Action
                 shipHasBeenChecked: false
             }
             //точно можно порефакторить, просто мозги уже кипят.
+            // ...state, starshipsInfo: action.data - what about that configuration? state is null, microtasc was working good and middleware as set main data and added.
+            // name is GET_ONE_STARSHIP => add to array? what the heppening here? change name for more informatical.
+            // if you like to set one by one ships there, you can dispatch AC from ui and redux will be add here year selection 
+            
             return {
                 ...state,
                 starshipsInfo: [
@@ -58,8 +72,11 @@ export const film5Reducer = (state: InitStateType = initialState, action: Action
                 ]
             }
         }
+            
+            //there are alot of set data in bisnes.
         case 'GET_CHECKED_STARSHIP': {
             const data = state.starshipsInfo.map((el: StarshipType) => {
+               
                 return el.url === action.data ? { ...el, shipHasBeenChecked: !el.shipHasBeenChecked } : el
             })
             return {
@@ -73,6 +90,8 @@ export const film5Reducer = (state: InitStateType = initialState, action: Action
     }
 }
 
+//what about create a new file where you call action creater?
+
 // actions
 export const getFilm5AC = (data: any) => ({type: 'GET_FILM5', data} as const);
 export const getStarShipsLinksAC = (data: any) => ({type: 'GET_STARSHIPS_LINKS', data} as const);
@@ -80,6 +99,9 @@ export const getOneStarShipAC = (data: any) => ({type: 'GET_ONE_STARSHIP', data}
 export const getCheckedStarShipAC = (data: string) => ({type: 'GET_CHECKED_STARSHIP', data} as const);
 
 
+
+//what about create a new file where you call thunks? 
+//for what to much types for STATUS? what about boolean and use finally? check it in learnJS, not for reason, if res or rej finally alary will work. Good? think yes
 // thunks
 export const getFilm5TC = () => async (dispatch: ThunkDispatch) => {
     // dispatch(setAppStatusAC('loading'))
@@ -106,7 +128,7 @@ export const getStarShipsLinksTC = () => async (dispatch: ThunkDispatch) => {
             // dispatch(setAppStatusAC('failed'))
         })
 }
-
+//try - catche from below, and async await from up ... what about use one of them?
 export const getOneStarShipTC = (url: string) => async (dispatch: ThunkDispatch) => {
     // dispatch(setAppStatusAC('loading'))
     try {
